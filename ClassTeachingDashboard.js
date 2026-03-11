@@ -24,11 +24,12 @@ function formatAverage(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-function buildCombinedData(selectedItems, dataSource) {
+function buildCombinedData(selectedItems, dataSource, metadata) {
   const lineDefinitions = [];
 
-  selectedItems.forEach((entityName, entityIndex) => {
-    const seriesMap = dataSource[entityName];
+  selectedItems.forEach((entityKey, entityIndex) => {
+    const seriesMap = dataSource[entityKey];
+    const entityLabel = metadata[entityKey]?.label || entityKey;
 
     if (!seriesMap) {
       return;
@@ -36,10 +37,11 @@ function buildCombinedData(selectedItems, dataSource) {
 
     Object.keys(seriesMap).forEach((seriesName, seriesIndex) => {
       lineDefinitions.push({
-        id: `${entityName}__${seriesName}`,
-        entityName,
+        id: `${entityKey}__${seriesName}`,
+        entityKey,
+        entityLabel,
         seriesName,
-        label: `${entityName} · ${seriesName}`,
+        label: `${entityLabel} · ${seriesName}`,
         color: LINE_COLORS[seriesIndex % LINE_COLORS.length],
         dash: LINE_STYLES[entityIndex % LINE_STYLES.length],
         yearlyCounts: seriesMap[seriesName],
@@ -78,7 +80,7 @@ function buildCombinedData(selectedItems, dataSource) {
       id: lineDefinition.id,
       color: lineDefinition.color,
       dash: lineDefinition.dash,
-      entityName: lineDefinition.entityName,
+      entityLabel: lineDefinition.entityLabel,
       seriesName: lineDefinition.seriesName,
       averageEnrollment: values.length ? totalStudents / values.length : 0,
       yearsTaught: values.length,
@@ -319,37 +321,52 @@ function MultiEntityChart({ chartData, lineDefinitions }) {
 
 function TeachingDashboardPage({
   dataSource,
+  classMetadata,
   pageTitle,
   pageDescription,
-  entityPluralLabel,
-  selectionLabel,
-  filterPlaceholder,
-  seriesLabel,
   emptyMessage,
 }) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [sortMode, setSortMode] = useState("name");
 
-  const options = useMemo(
-    () =>
-      Object.keys(dataSource).sort((first, second) =>
-        first.localeCompare(second, "he")
-      ),
-    [dataSource]
-  );
+  const options = useMemo(() => {
+    return Object.entries(classMetadata)
+      .map(([key, meta]) => ({ key, ...meta }))
+      .sort((first, second) => {
+        if (sortMode === "number") {
+          return (
+            first.number.localeCompare(second.number, "en") ||
+            first.name.localeCompare(second.name, "he")
+          );
+        }
+
+        return (
+          first.name.localeCompare(second.name, "he") ||
+          first.number.localeCompare(second.number, "en")
+        );
+      });
+  }, [classMetadata, sortMode]);
 
   const visibleOptions = useMemo(() => {
     const query = normalizeText(filterValue.trim());
 
-    return options
-      .filter((option) =>
-        query ? normalizeText(option).includes(query) : true
+    return options.filter((option) => {
+      if (!query) {
+        return true;
+      }
+
+      return (
+        normalizeText(option.name).includes(query) ||
+        normalizeText(option.number).includes(query) ||
+        normalizeText(option.label).includes(query)
       );
+    });
   }, [filterValue, options]);
 
   const combinedData = useMemo(
-    () => buildCombinedData(selectedItems, dataSource),
-    [dataSource, selectedItems]
+    () => buildCombinedData(selectedItems, dataSource, classMetadata),
+    [classMetadata, dataSource, selectedItems]
   );
 
   function updateSelection(event) {
@@ -421,7 +438,7 @@ function TeachingDashboardPage({
                 type="text"
                 value={filterValue}
                 onChange={(event) => setFilterValue(event.target.value)}
-                placeholder={filterPlaceholder}
+                placeholder="Filter by class name or class number"
                 className="mb-4 w-full rounded-2xl border px-4 py-3 outline-none transition"
                 style={{
                   backgroundColor: "#0f1117",
@@ -430,8 +447,34 @@ function TeachingDashboardPage({
                 }}
               />
 
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-sm font-medium">Sort by</span>
+                {[
+                  { value: "name", label: "Name" },
+                  { value: "number", label: "Number" },
+                ].map((option) => {
+                  const active = sortMode === option.value;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setSortMode(option.value)}
+                      className="rounded-full px-3 py-1 text-sm"
+                      style={{
+                        backgroundColor: active ? "#5b8af5" : "#0f1117",
+                        border: `1px solid ${active ? "#5b8af5" : "#282d3e"}`,
+                        color: active ? "#0f1117" : "#e0e4ef",
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+
               <label className="mb-2 block text-sm font-medium" htmlFor="entity-select">
-                {selectionLabel}
+                Classes
               </label>
               <select
                 id="entity-select"
@@ -446,13 +489,13 @@ function TeachingDashboardPage({
                 }}
               >
                 {visibleOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
+                  <option key={option.key} value={option.key}>
+                    {option.number} · {option.name}
                   </option>
                 ))}
               </select>
               <p className="mt-3 text-sm" style={{ color: "#98a2c3" }}>
-                Use Cmd/Ctrl-click to select multiple {entityPluralLabel}.
+                Use Cmd/Ctrl-click to select multiple classes.
               </p>
             </div>
 
@@ -465,10 +508,10 @@ function TeachingDashboardPage({
             >
               <div className="mb-2 text-sm font-medium">Chart rules</div>
               <div className="space-y-2 text-sm" style={{ color: "#a9b1c9" }}>
-                <div>All selected {entityPluralLabel} appear on one shared plot.</div>
+                <div>Each class entry shows both its number and its name.</div>
                 <div>
-                  Color differentiates {seriesLabel}; line style differentiates the
-                  selected {entityPluralLabel}.
+                  Color differentiates instructors; line style differentiates the
+                  selected classes.
                 </div>
                 <div>
                   {selectedItems.length} selected · {combinedData.lineDefinitions.length} visible
@@ -523,7 +566,7 @@ function TeachingDashboardPage({
                 className="text-2xl md:text-3xl"
                 style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
               >
-                {selectedItems.length} selected {entityPluralLabel}
+                {selectedItems.length} selected classes
               </h2>
             </div>
 
@@ -561,7 +604,7 @@ function TeachingDashboardPage({
                     className="mb-2 text-xs uppercase tracking-[0.2em]"
                     style={{ color: "#98a2c3" }}
                   >
-                    {stat.entityName}
+                    {stat.entityLabel}
                   </div>
                   <div className="space-y-1 text-sm" style={{ color: "#a9b1c9" }}>
                     <div>Average enrollment: {formatAverage(stat.averageEnrollment)}</div>
@@ -631,12 +674,9 @@ function App() {
   return (
     <TeachingDashboardPage
       dataSource={window.CLASS_DATA}
+      classMetadata={window.CLASS_METADATA}
       pageTitle="Class Teaching Dashboard"
-      pageDescription="Select multiple classes from the list box and compare all of their instructors on one shared chart."
-      entityPluralLabel="classes"
-      selectionLabel="Classes"
-      filterPlaceholder="Filter class names in Hebrew"
-      seriesLabel="instructors"
+      pageDescription="Select multiple class entries from the list box, show both number and name, and sort the list by either field."
       emptyMessage="Select one or more classes from the box above to view their lecture enrollment history."
     />
   );
