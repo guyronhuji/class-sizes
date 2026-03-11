@@ -454,27 +454,6 @@ function TeachingDashboardPage({
               <p className="mt-3 text-sm" style={{ color: "#98a2c3" }}>
                 Use Cmd/Ctrl-click to select multiple {entityPluralLabel}.
               </p>
-            </div>
-
-            <div
-              className="rounded-2xl border p-4"
-              style={{
-                backgroundColor: "#0f1117",
-                borderColor: "#282d3e",
-              }}
-            >
-              <div className="mb-2 text-sm font-medium">Chart rules</div>
-              <div className="space-y-2 text-sm" style={{ color: "#a9b1c9" }}>
-                <div>All selected {entityPluralLabel} appear on one shared plot.</div>
-                <div>
-                  Color differentiates {seriesLabel}; line style differentiates the
-                  selected {entityPluralLabel}.
-                </div>
-                <div>
-                  {selectedItems.length} selected · {combinedData.lineDefinitions.length} visible
-                  lines
-                </div>
-              </div>
               {selectedItems.length > 0 && (
                 <button
                   type="button"
@@ -490,21 +469,51 @@ function TeachingDashboardPage({
                 </button>
               )}
             </div>
+
+            {combinedData.lineDefinitions.length === 0 ? (
+              <div
+                className="flex min-h-[360px] items-center justify-center rounded-2xl border px-6 text-center"
+                style={{
+                  backgroundColor: "#0f1117",
+                  borderColor: "#282d3e",
+                  color: "#98a2c3",
+                }}
+              >
+                {emptyMessage}
+              </div>
+            ) : (
+              <div
+                className="rounded-2xl border p-4"
+                style={{
+                  backgroundColor: "#0f1117",
+                  borderColor: "#282d3e",
+                }}
+              >
+                <div className="mb-5 space-y-2">
+                  <div
+                    className="text-xs uppercase tracking-[0.24em]"
+                    style={{ color: "#98a2c3" }}
+                  >
+                    Combined Plot
+                  </div>
+                  <h2
+                    className="text-2xl md:text-3xl"
+                    style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                  >
+                    {selectedItems.length} selected {entityPluralLabel}
+                  </h2>
+                </div>
+
+                <MultiEntityChart
+                  chartData={combinedData.chartData}
+                  lineDefinitions={combinedData.lineDefinitions}
+                />
+              </div>
+            )}
           </div>
         </section>
 
-        {combinedData.lineDefinitions.length === 0 ? (
-          <div
-            className="flex min-h-[360px] items-center justify-center rounded-3xl border px-6 text-center"
-            style={{
-              backgroundColor: "#181b24",
-              borderColor: "#282d3e",
-              color: "#98a2c3",
-            }}
-          >
-            {emptyMessage}
-          </div>
-        ) : (
+        {combinedData.lineDefinitions.length > 0 && (
           <section
             className="rounded-3xl border p-5"
             style={{
@@ -517,22 +526,17 @@ function TeachingDashboardPage({
                 className="text-xs uppercase tracking-[0.24em]"
                 style={{ color: "#98a2c3" }}
               >
-                Combined Plot
+                Course Summaries
               </div>
               <h2
                 className="text-2xl md:text-3xl"
                 style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
               >
-                {selectedItems.length} selected {entityPluralLabel}
+                Course lines in the current comparison
               </h2>
             </div>
 
-            <MultiEntityChart
-              chartData={combinedData.chartData}
-              lineDefinitions={combinedData.lineDefinitions}
-            />
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {combinedData.stats.map((stat) => (
                 <div
                   key={stat.id}
@@ -572,6 +576,27 @@ function TeachingDashboardPage({
             </div>
           </section>
         )}
+
+        <section
+          className="rounded-3xl border p-5"
+          style={{
+            backgroundColor: "#181b24",
+            borderColor: "#282d3e",
+          }}
+        >
+          <div className="mb-2 text-sm font-medium">Chart rules</div>
+          <div className="space-y-2 text-sm" style={{ color: "#a9b1c9" }}>
+            <div>All selected {entityPluralLabel} appear on one shared plot.</div>
+            <div>
+              Color differentiates {seriesLabel}; line style differentiates the selected{" "}
+              {entityPluralLabel}.
+            </div>
+            <div>
+              {selectedItems.length} selected · {combinedData.lineDefinitions.length} visible
+              lines
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
