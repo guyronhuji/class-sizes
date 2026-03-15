@@ -20,6 +20,14 @@ function normalizeText(value) {
   return String(value || "").toLocaleLowerCase();
 }
 
+function compareHebrewNames(first, second) {
+  return first.localeCompare(second, "he", {
+    sensitivity: "base",
+    ignorePunctuation: true,
+    numeric: true,
+  });
+}
+
 function formatAverage(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
@@ -332,9 +340,7 @@ function TeachingDashboardPage({
 
   const options = useMemo(
     () =>
-      Object.keys(dataSource).sort((first, second) =>
-        first.localeCompare(second, "he")
-      ),
+      Object.keys(dataSource).sort((first, second) => compareHebrewNames(first, second)),
     [dataSource]
   );
 
