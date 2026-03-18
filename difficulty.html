@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Difficulty Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+      html, body, #root { margin: 0; min-height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" style="min-height:100vh;background:#0f1117;color:#e0e4ef;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;">
+      Loading difficulty dashboard...
+    </div>
+
+    <script>
+      window.DIFFICULTY_DATA = [{"code": "67101", "name": "מבוא למדעי המחשב", "mean": 90.2, "median": 92.0, "std": 6.7, "min": 71, "max": 100, "n": 111}, {"code": "80114", "name": "מתמטיקה שימושית (1)", "mean": 82.2, "median": 85.0, "std": 12.7, "min": 60, "max": 100, "n": 270}, {"code": "80153", "name": "אלגברה ליניארית לתלמידי הנדסה ומדעים 1", "mean": 83.7, "median": 84.0, "std": 11.2, "min": 60, "max": 100, "n": 134}, {"code": "80181", "name": "מתמטיקה דיסקרטית", "mean": 81.2, "median": 82.5, "std": 13.6, "min": 60, "max": 100, "n": 52}, {"code": "3053", "name": "תיאוריות בהתפתחות הילד והמתבגר", "mean": 90.4, "median": 91.0, "std": 4.0, "min": 85, "max": 95, "n": 5}, {"code": "77114", "name": "מעבדה בפיסיקה  א1", "mean": 91.6, "median": 93.0, "std": 6.2, "min": 62, "max": 100, "n": 172}, {"code": "80157", "name": "מתמטיקה שימושית (2)", "mean": 82.4, "median": 85.0, "std": 12.6, "min": 60, "max": 100, "n": 265}, {"code": "76641", "name": "תכנות פייתון ומטלאב לפיסיקאים", "mean": 88.1, "median": 91.0, "std": 10.1, "min": 60, "max": 100, "n": 134}, {"code": "77101", "name": "מכניקה ויחסות פרטית", "mean": 81.4, "median": 82.0, "std": 11.9, "min": 60, "max": 100, "n": 238}, {"code": "77102", "name": "חשמל ומגנטיות", "mean": 85.5, "median": 89.0, "std": 13.4, "min": 60, "max": 100, "n": 232}, {"code": "77622", "name": "מעבדה בפיסיקה  א2", "mean": 92.0, "median": 93.0, "std": 5.0, "min": 71, "max": 100, "n": 126}, {"code": "80154", "name": "אלגברה ליניארית לתלמידי הנדסה ומדעים 2", "mean": 82.6, "median": 84.0, "std": 12.6, "min": 60, "max": 100, "n": 128}, {"code": "80155", "name": "חשבון אינפיניטסימלי לפיסיקאים", "mean": 79.5, "median": 78.5, "std": 12.8, "min": 60, "max": 100, "n": 118}, {"code": "67102", "name": "מבוא למדעי המחשב - קורס קיץ", "mean": 88.6, "median": 90.0, "std": 7.1, "min": 78, "max": 100, "n": 15}, {"code": "77174", "name": "מעבדה בפיסיקה א' 1 משלים", "mean": 92.3, "median": 92.0, "std": 5.6, "min": 83, "max": 100, "n": 21}, {"code": "15300", "name": "פילוסופיה של המדע", "mean": 87.2, "median": 90.0, "std": 11.5, "min": 67, "max": 95, "n": 5}, {"code": "77303", "name": "מכניקה אנליטית", "mean": 86.8, "median": 89.0, "std": 10.7, "min": 60, "max": 100, "n": 159}, {"code": "77305", "name": "גלים ואופטיקה", "mean": 88.0, "median": 94.0, "std": 13.7, "min": 60, "max": 100, "n": 137}, {"code": "77318", "name": "תורת הקוונטים (1)", "mean": 91.4, "median": 97.0, "std": 12.1, "min": 60, "max": 100, "n": 144}, {"code": "77335", "name": "מעבדה ב'1 -גלים, מערכות דינאמיות ותכונות חומרים", "mean": 89.9, "median": 91.0, "std": 5.3, "min": 69, "max": 100, "n": 137}, {"code": "77336", "name": "מעבדה ב'2 -גלים, מערכות דינאמיות ותכונות חומרים", "mean": 89.7, "median": 90.5, "std": 4.8, "min": 69, "max": 100, "n": 128}, {"code": "15331", "name": "זמן: פיזיקה ופילוסופיה", "mean": 84.0, "median": 80.0, "std": 15.2, "min": 70, "max": 100, "n": 5}, {"code": "35123", "name": "מבוא לפילוסופיה בודהיסטית", "mean": 88.8, "median": 91.0, "std": 7.9, "min": 75, "max": 95, "n": 5}, {"code": "35155", "name": "בין הבודהה למערב: שאלות גדולות בפילוסופיה", "mean": 88.0, "median": 89.0, "std": 7.6, "min": 76, "max": 99, "n": 9}, {"code": "6110", "name": "היסודות הפילוסופיים של מדעי הקוגניציה", "mean": 93.5, "median": 95.0, "std": 5.2, "min": 82, "max": 99, "n": 10}, {"code": "69322", "name": "כימיה כללית לתלמידי פיסיקה", "mean": 83.1, "median": 84.0, "std": 13.0, "min": 60, "max": 100, "n": 61}, {"code": "77152", "name": "פיסיקה תרמית", "mean": 86.3, "median": 88.0, "std": 11.7, "min": 60, "max": 100, "n": 158}, {"code": "77508", "name": "מעבדה ג: ניסויים מתקדמים בפיסיקה קוונטית ומודרנית", "mean": 92.8, "median": 93.5, "std": 3.5, "min": 85, "max": 97, "n": 30}, {"code": "77605", "name": "תורת הקוונטים (2)", "mean": 84.7, "median": 84.0, "std": 13.9, "min": 62, "max": 100, "n": 27}, {"code": "80312", "name": "הסתברות ושימושיה", "mean": 87.7, "median": 93.0, "std": 13.2, "min": 60, "max": 100, "n": 134}, {"code": "80314", "name": "פונקציות מרוכבות ושימושיהן", "mean": 85.2, "median": 87.0, "std": 12.7, "min": 60, "max": 100, "n": 89}, {"code": "77106", "name": "חשמל ומגנטיות- קורס קיץ", "mean": 77.2, "median": 75.0, "std": 11.9, "min": 60, "max": 100, "n": 29}, {"code": "77153", "name": "רעיונות יסוד בפיסיקה מודרנית", "mean": 84.9, "median": 88.0, "std": 11.2, "min": 64, "max": 100, "n": 13}, {"code": "77606", "name": "תורת הרצף", "mean": 84.0, "median": 84.0, "std": 12.0, "min": 65, "max": 100, "n": 21}, {"code": "77111", "name": "מעבדה מתקדמת בפיסיקה א", "mean": 93.3, "median": 93.0, "std": 2.6, "min": 89, "max": 100, "n": 23}, {"code": "67109", "name": "מבני נתונים", "mean": 89.7, "median": 90.5, "std": 8.1, "min": 60, "max": 100, "n": 122}, {"code": "67315", "name": "סי וסי++ לאלגוריתמיקה מעשית", "mean": 88.6, "median": 90.0, "std": 8.6, "min": 65, "max": 100, "n": 57}, {"code": "67925", "name": "סדנה במערכות חישוב מ-NAND ל-TETRIS", "mean": 86.2, "median": 87.0, "std": 7.6, "min": 62, "max": 100, "n": 52}, {"code": "77412", "name": "שיטות קירוב ושיערוך בבעיות פיסיקליות", "mean": 93.5, "median": 95.0, "std": 2.7, "min": 88, "max": 98, "n": 17}, {"code": "67521", "name": "מודלים חישוביים, חישוביות וסיבוכיות", "mean": 91.9, "median": 97.0, "std": 11.5, "min": 63, "max": 100, "n": 17}, {"code": "80200", "name": "תורת הקבוצות", "mean": 92.2, "median": 96.0, "std": 10.6, "min": 62, "max": 100, "n": 43}, {"code": "80445", "name": "מבנים אלגבריים (1)", "mean": 89.9, "median": 93.5, "std": 10.8, "min": 62, "max": 100, "n": 56}, {"code": "80446", "name": "מבנים אלגבריים (2)", "mean": 91.3, "median": 95.0, "std": 9.6, "min": 77, "max": 100, "n": 12}, {"code": "77313", "name": "משוואות של פיסיקה מתמטית", "mean": 88.6, "median": 92.0, "std": 10.0, "min": 60, "max": 100, "n": 112}, {"code": "80516", "name": "מבוא לטופולוגיה", "mean": 85.3, "median": 88.0, "std": 12.7, "min": 62, "max": 100, "n": 17}, {"code": "80131", "name": "חשבון אינפיניטסימלי (1)", "mean": 87.3, "median": 89.5, "std": 11.3, "min": 60, "max": 100, "n": 104}, {"code": "80132", "name": "חשבון אינפיניטסימלי (2)", "mean": 82.3, "median": 82.0, "std": 11.3, "min": 60, "max": 100, "n": 110}, {"code": "80134", "name": "אלגברה ליניארית (1)", "mean": 90.0, "median": 93.0, "std": 10.5, "min": 60, "max": 100, "n": 106}, {"code": "80135", "name": "אלגברה ליניארית (2)", "mean": 88.5, "median": 90.0, "std": 10.7, "min": 60, "max": 100, "n": 124}, {"code": "80415", "name": "חשבון אינפיניטסימלי 3", "mean": 89.2, "median": 94.5, "std": 12.2, "min": 63, "max": 100, "n": 32}, {"code": "67320", "name": "סדנת תכנות ב C ו C++ קיץ", "mean": 86.2, "median": 89.0, "std": 6.4, "min": 75, "max": 91, "n": 5}, {"code": "67504", "name": "אלגוריתמים", "mean": 90.7, "median": 93.0, "std": 10.2, "min": 64, "max": 100, "n": 46}, {"code": "67577", "name": "מבוא ללמידת מכונה", "mean": 89.5, "median": 92.5, "std": 8.0, "min": 72, "max": 97, "n": 16}, {"code": "67125", "name": "מבוא לתכנות מונחה עצמים", "mean": 90.5, "median": 91.0, "std": 4.7, "min": 82, "max": 99, "n": 19}, {"code": "67506", "name": "מסדי נתונים", "mean": 93.0, "median": 92.0, "std": 3.5, "min": 90, "max": 99, "n": 5}, {"code": "67808", "name": "מערכות הפעלה", "mean": 89.0, "median": 89.0, "std": 4.8, "min": 80, "max": 97, "n": 12}, {"code": "77307", "name": "מבוא לפיסיקה סטטיסטית", "mean": 85.6, "median": 85.5, "std": 9.4, "min": 60, "max": 100, "n": 38}, {"code": "11121", "name": "אנגלית מתקדמים ב׳ למדעי הטבע", "mean": 87.4, "median": 88.5, "std": 6.4, "min": 72, "max": 97, "n": 24}, {"code": "80123", "name": "מתמטיקה שימושית (2)", "mean": 76.5, "median": 76.5, "std": 14.6, "min": 60, "max": 95, "n": 6}, {"code": "11122", "name": "אנגלית מתקדמים א׳ למדעי הטבע", "mean": 82.9, "median": 82.5, "std": 8.5, "min": 70, "max": 98, "n": 10}, {"code": "77110", "name": "מעבדה בפיסיקה א תלפיות", "mean": 93.7, "median": 94.0, "std": 2.8, "min": 82, "max": 98, "n": 75}, {"code": "77159", "name": "מעבדה בפיסיקה א - חלקית", "mean": 86.0, "median": 82.0, "std": 7.0, "min": 79, "max": 95, "n": 5}, {"code": "77401", "name": "חשמל אנליטי", "mean": 80.1, "median": 81.0, "std": 11.2, "min": 60, "max": 100, "n": 67}, {"code": "77501", "name": "אסטרופיסיקה וקוסמולוגיה", "mean": 90.2, "median": 96.0, "std": 11.9, "min": 64, "max": 100, "n": 13}, {"code": "77594", "name": "תהליכים פיסיקליים באסטרופיסיקה", "mean": 95.5, "median": 95.5, "std": 1.4, "min": 94, "max": 97, "n": 6}, {"code": "80137", "name": "חשבון אינפיניטסימלי לתלמידי אודיסיאה", "mean": 91.4, "median": 99.0, "std": 10.9, "min": 74, "max": 100, "n": 7}, {"code": "77099", "name": "חשמל ומגנטיות לתלמידי אודיסיאה", "mean": 98.0, "median": 100.0, "std": 3.9, "min": 91, "max": 100, "n": 5}, {"code": "80697", "name": "תורת המספרים האלמנטרית לתלמידי אודיסיאה", "mean": 91.6, "median": 88.0, "std": 7.9, "min": 83, "max": 100, "n": 5}, {"code": "77100", "name": "מכניקה ויחסות פרטית לתלמידי אודיסיאה", "mean": 92.0, "median": 91.0, "std": 5.1, "min": 86, "max": 100, "n": 5}, {"code": "11126", "name": "אנגלית מתקדמים ב' למדעי המחשב, הנדסה ומתמטיקה", "mean": 88.1, "median": 87.0, "std": 4.3, "min": 82, "max": 96, "n": 11}, {"code": "79617", "name": "טכנולוגיות לוחמה בעידן המידע לחניכי תלפיות", "mean": 84.7, "median": 84.0, "std": 6.4, "min": 73, "max": 95, "n": 22}, {"code": "83536", "name": "מאלגברה לינארית לאייפון (א'): הנדסת חשמל ומערכות מעקרונות ראשוניים", "mean": 93.5, "median": 95.0, "std": 5.9, "min": 74, "max": 100, "n": 24}, {"code": "83537", "name": "מאלגברה לינארית לאייפון (ב): הנדסת חשמל ומערכות מעקרונות ראשוניים", "mean": 93.0, "median": 93.0, "std": 8.0, "min": 71, "max": 100, "n": 21}, {"code": "15100", "name": "מבוא לאתיקה ופילוסופיה פוליטית - חלק א'", "mean": 88.9, "median": 90.0, "std": 4.7, "min": 81, "max": 94, "n": 7}, {"code": "15187", "name": "בעיות מרכזיות בפילוסופיה", "mean": 87.2, "median": 86.5, "std": 7.4, "min": 80, "max": 100, "n": 6}, {"code": "15200", "name": "מבוא לאתיקה ופילוסופיה פוליטית - חלק ב'", "mean": 86.7, "median": 86.0, "std": 5.8, "min": 81, "max": 95, "n": 7}, {"code": "15104", "name": "מבוא לפילוסופיה היוונית", "mean": 83.6, "median": 83.0, "std": 3.3, "min": 79, "max": 88, "n": 5}, {"code": "15108", "name": "קריאה ביקורתית בטקסטים פילוסופיים", "mean": 89.7, "median": 90.0, "std": 3.0, "min": 86, "max": 94, "n": 7}, {"code": "77910", "name": "מכניקה ויחסות פרטית לתלמידי תלפיות", "mean": 97.5, "median": 100.0, "std": 5.0, "min": 84, "max": 100, "n": 14}, {"code": "80142", "name": "חשבון אינפיניטסימלי 2 (מורחב)", "mean": 93.0, "median": 90.0, "std": 6.7, "min": 85, "max": 100, "n": 5}, {"code": "80417", "name": "אנליזה פונקציונלית", "mean": 88.6, "median": 88.5, "std": 8.4, "min": 72, "max": 100, "n": 10}, {"code": "80519", "name": "פונקציות מרוכבות", "mean": 87.6, "median": 90.0, "std": 9.4, "min": 71, "max": 100, "n": 7}, {"code": "15101", "name": "מבוא לתורת ההגיון", "mean": 92.3, "median": 93.0, "std": 5.5, "min": 84, "max": 99, "n": 7}, {"code": "6112", "name": "מבוא לחקר השפה", "mean": 91.4, "median": 93.0, "std": 5.7, "min": 80, "max": 99, "n": 9}, {"code": "6164", "name": "ממולקולה לתא עצב", "mean": 89.9, "median": 91.0, "std": 9.0, "min": 67, "max": 100, "n": 10}, {"code": "80423", "name": "מבוא ללוגיקה", "mean": 88.9, "median": 92.5, "std": 12.3, "min": 63, "max": 99, "n": 8}, {"code": "68104", "name": "מבוא למדעי הים", "mean": 88.6, "median": 89.0, "std": 5.3, "min": 80, "max": 96, "n": 8}, {"code": "80420", "name": "תורת ההסתברות (1)", "mean": 92.2, "median": 97.0, "std": 9.8, "min": 61, "max": 100, "n": 17}, {"code": "62822", "name": "משפט וחברה", "mean": 83.3, "median": 81.0, "std": 7.0, "min": 76, "max": 93, "n": 6}, {"code": "77634", "name": "פיסיקה סביבתית - המדע של שינויי האקלים", "mean": 90.8, "median": 91.0, "std": 1.9, "min": 88, "max": 93, "n": 5}, {"code": "77602", "name": "פיסיקה של המצב המוצק", "mean": 85.2, "median": 90.0, "std": 10.6, "min": 67, "max": 93, "n": 5}, {"code": "72301", "name": "מבוא להסתברות וסטטיסטיקה", "mean": 96.5, "median": 98.0, "std": 4.7, "min": 88, "max": 100, "n": 6}, {"code": "6115", "name": "תהליכים קוגניטיביים למדעי הקוגניציה", "mean": 88.1, "median": 89.0, "std": 4.2, "min": 83, "max": 95, "n": 7}, {"code": "6130", "name": "פייתון הלכה למעשה", "mean": 95.3, "median": 97.0, "std": 3.5, "min": 89, "max": 100, "n": 9}, {"code": "6166", "name": "מתא עצב להתנהגות", "mean": 91.6, "median": 93.0, "std": 9.4, "min": 70, "max": 100, "n": 8}, {"code": "6119", "name": "חישוביות וקוגניציה", "mean": 86.4, "median": 86.0, "std": 8.2, "min": 75, "max": 99, "n": 7}, {"code": "6168", "name": "נוירוביולוגיה של התפתחות ולמידה", "mean": 87.2, "median": 88.0, "std": 11.3, "min": 69, "max": 100, "n": 5}, {"code": "76631", "name": "תכנות בסיסי בפייתון", "mean": 92.0, "median": 92.0, "std": 4.0, "min": 88, "max": 96, "n": 5}, {"code": "77635", "name": "פרוייקט מחקרי בפיסיקה", "mean": 96.0, "median": 96.5, "std": 3.0, "min": 91, "max": 100, "n": 6}, {"code": "80416", "name": "אנליזה על יריעות", "mean": 97.6, "median": 100.0, "std": 3.3, "min": 92, "max": 100, "n": 7}, {"code": "77322", "name": "מעבדה מתקדמת בפיסיקה ב", "mean": 97.0, "median": 97.0, "std": 1.6, "min": 95, "max": 100, "n": 10}];
+    </script>
+
+    <script type="text/plain" id="dashboard-script">
+const { useEffect, useRef, useState, useMemo } = React;
+
+const CMIN = 76;
+const CMAX = 98;
+const COLORSCALE = [
+  [0,    "#d73027"],
+  [0.25, "#fc8d59"],
+  [0.5,  "#ffffbf"],
+  [0.75, "#91cf60"],
+  [1,    "#1a9850"],
+];
+
+function buildTrace(data) {
+  return {
+    type: "scatter",
+    mode: "markers",
+    x: data.map((d) => d.mean),
+    y: data.map((d) => d.std),
+    marker: {
+      size: data.map((d) => Math.sqrt(d.n) * 3.5),
+      sizemode: "diameter",
+      color: data.map((d) => d.mean),
+      colorscale: COLORSCALE,
+      cmin: CMIN,
+      cmax: CMAX,
+      colorbar: {
+        title: { text: "Mean Grade", font: { color: "#98a2c3", size: 11 } },
+        tickfont: { color: "#98a2c3" },
+        thickness: 12,
+        len: 0.65,
+      },
+      line: { width: 0.5, color: "rgba(255,255,255,0.15)" },
+      opacity: 0.88,
+    },
+    text: data.map(
+      (d) =>
+        `<b>${d.name}</b><br>` +
+        `Course: ${d.code}<br>` +
+        `Students: ${d.n}<br>` +
+        `Mean: ${d.mean.toFixed(1)}<br>` +
+        `Median: ${d.median.toFixed(1)}<br>` +
+        `Std Dev: ${d.std.toFixed(1)}<br>` +
+        `Min / Max: ${d.min} / ${d.max}`
+    ),
+    hoverinfo: "text",
+  };
+}
+
+const LAYOUT = {
+  paper_bgcolor: "#181b24",
+  plot_bgcolor: "#181b24",
+  xaxis: {
+    title: { text: "Mean Grade  (lower = harder)", font: { color: "#98a2c3", size: 12 } },
+    range: [74, 101],
+    gridcolor: "#282d3e",
+    zerolinecolor: "#282d3e",
+    tickfont: { color: "#98a2c3" },
+    linecolor: "#282d3e",
+  },
+  yaxis: {
+    title: { text: "Std Dev of Grades  (grade spread)", font: { color: "#98a2c3", size: 12 } },
+    range: [-0.5, 18],
+    gridcolor: "#282d3e",
+    zerolinecolor: "#282d3e",
+    tickfont: { color: "#98a2c3" },
+    linecolor: "#282d3e",
+  },
+  margin: { t: 16, r: 80, b: 56, l: 68 },
+  font: { family: '"DM Sans", system-ui, sans-serif', color: "#e0e4ef" },
+  hoverlabel: {
+    bgcolor: "#181b24",
+    bordercolor: "#282d3e",
+    font: { size: 13, color: "#e0e4ef", family: '"DM Sans", system-ui, sans-serif' },
+    align: "right",
+  },
+  transition: { duration: 280, easing: "cubic-in-out" },
+};
+
+const CONFIG = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ["lasso2d", "select2d"],
+  toImageButtonOptions: { filename: "course-difficulty", scale: 2 },
+};
+
+function ScatterPlot({ data }) {
+  const ref = useRef(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const trace = buildTrace(data);
+    if (!initialized.current) {
+      Plotly.newPlot(ref.current, [trace], LAYOUT, CONFIG);
+      initialized.current = true;
+    } else {
+      Plotly.react(ref.current, [trace], LAYOUT, CONFIG);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    return () => {
+      if (ref.current) Plotly.purge(ref.current);
+    };
+  }, []);
+
+  return <div ref={ref} style={{ width: "100%", height: 520 }} />;
+}
+
+function StatCard({ course }) {
+  const hardness = ((CMAX - course.mean) / (CMAX - CMIN));
+  const hue = hardness < 0.5
+    ? `rgb(${Math.round(145 + 110 * hardness * 2)},${Math.round(207 - 116 * hardness * 2)},${Math.round(96 - 50 * hardness * 2)})`
+    : `rgb(${Math.round(252 - 92 * (hardness - 0.5) * 2)},${Math.round(141 - 82 * (hardness - 0.5) * 2)},${Math.round(89 - 62 * (hardness - 0.5) * 2)})`;
+
+  return (
+    <div
+      className="rounded-2xl border p-4 space-y-2"
+      style={{ backgroundColor: "#11141c", borderColor: "#282d3e" }}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span
+          className="text-sm font-medium leading-snug"
+          style={{ color: "#e0e4ef", direction: "rtl" }}
+        >
+          {course.name}
+        </span>
+        <span
+          className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium"
+          style={{ backgroundColor: "#181b24", color: "#98a2c3", border: "1px solid #282d3e" }}
+        >
+          {course.code}
+        </span>
+      </div>
+      <div className="flex items-center gap-3 text-sm" style={{ color: "#98a2c3" }}>
+        <span>
+          Mean:{" "}
+          <span className="font-semibold" style={{ color: hue }}>
+            {course.mean.toFixed(1)}
+          </span>
+        </span>
+        <span style={{ color: "#282d3e" }}>·</span>
+        <span>
+          σ:{" "}
+          <span className="font-semibold" style={{ color: "#e0e4ef" }}>
+            {course.std.toFixed(1)}
+          </span>
+        </span>
+        <span style={{ color: "#282d3e" }}>·</span>
+        <span>n={course.n}</span>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [minN, setMinN] = useState(5);
+
+  const filtered = useMemo(
+    () => window.DIFFICULTY_DATA.filter((d) => d.n >= minN),
+    [minN]
+  );
+
+  const sorted = useMemo(
+    () => [...filtered].sort((a, b) => a.mean - b.mean),
+    [filtered]
+  );
+
+  function handleChange(val) {
+    const n = Math.max(1, parseInt(val) || 1);
+    setMinN(n);
+  }
+
+  return (
+    <div
+      className="min-h-screen w-full overflow-y-auto px-4 py-8 md:px-8"
+      style={{ backgroundColor: "#0f1117", color: "#e0e4ef", fontFamily: '"DM Sans", system-ui, sans-serif' }}
+    >
+      <div className="mx-auto max-w-7xl space-y-6">
+
+        {/* Header */}
+        <header className="space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="./index.html"
+              className="inline-flex items-center rounded-full border px-3 py-1 text-xs uppercase tracking-[0.24em]"
+              style={{ borderColor: "#282d3e", backgroundColor: "#181b24", color: "#98a2c3" }}
+            >
+              ← Back
+            </a>
+            <div
+              className="inline-flex items-center rounded-full border px-3 py-1 text-xs uppercase tracking-[0.24em]"
+              style={{ borderColor: "#282d3e", backgroundColor: "#181b24", color: "#98a2c3" }}
+            >
+              Racah Institute of Physics · Grade data
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div
+              className="text-xs uppercase tracking-[0.28em]"
+              style={{ color: "#5b8af5" }}
+            >
+              Course Analysis
+            </div>
+            <h1
+              className="text-4xl md:text-5xl leading-tight"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              Course{" "}
+              <span style={{ color: "#f5a85b" }}>Difficulty</span>
+            </h1>
+            <p className="max-w-2xl text-base leading-7" style={{ color: "#b5bdd4" }}>
+              Mean grade vs. grade spread for Physics courses. Bubble size reflects number of students.
+              Red = harder (lower mean), green = easier (higher mean).
+            </p>
+          </div>
+        </header>
+
+        {/* Filter */}
+        <div
+          className="rounded-3xl border p-5 flex flex-wrap items-center gap-5"
+          style={{ backgroundColor: "#181b24", borderColor: "#282d3e" }}
+        >
+          <div
+            className="text-xs uppercase tracking-[0.24em]"
+            style={{ color: "#98a2c3" }}
+          >
+            Filter
+          </div>
+          <label className="flex items-center gap-3 text-sm" style={{ color: "#b5bdd4" }}>
+            Min students
+            <input
+              type="number"
+              value={minN}
+              min="1"
+              max="300"
+              onChange={(e) => handleChange(e.target.value)}
+              className="w-16 rounded-xl border bg-transparent px-3 py-1.5 text-center text-sm font-medium outline-none focus:border-blue-500"
+              style={{ borderColor: "#282d3e", color: "#e0e4ef", backgroundColor: "#11141c" }}
+            />
+            <input
+              type="range"
+              value={minN}
+              min="1"
+              max="300"
+              onChange={(e) => handleChange(e.target.value)}
+              className="w-36 accent-blue-400"
+            />
+          </label>
+          <div className="ml-auto text-sm" style={{ color: "#98a2c3" }}>
+            <span className="font-semibold" style={{ color: "#e0e4ef" }}>{filtered.length}</span>{" "}
+            courses shown
+          </div>
+        </div>
+
+        {/* Scatter plot */}
+        <div
+          className="rounded-3xl border overflow-hidden"
+          style={{ backgroundColor: "#181b24", borderColor: "#282d3e" }}
+        >
+          <div className="px-6 pt-5 pb-2 space-y-1">
+            <div className="text-xs uppercase tracking-[0.24em]" style={{ color: "#98a2c3" }}>
+              Scatter Plot
+            </div>
+            <h2
+              className="text-2xl md:text-3xl"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              Difficulty vs grade variance
+            </h2>
+          </div>
+          <ScatterPlot data={filtered} />
+        </div>
+
+        {/* Course table sorted hardest first */}
+        <div
+          className="rounded-3xl border p-5"
+          style={{ backgroundColor: "#181b24", borderColor: "#282d3e" }}
+        >
+          <div className="mb-5 space-y-2">
+            <div className="text-xs uppercase tracking-[0.24em]" style={{ color: "#98a2c3" }}>
+              Ranked hardest → easiest
+            </div>
+            <h2
+              className="text-2xl md:text-3xl"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              Course rankings
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {sorted.map((course) => (
+              <StatCard key={course.code} course={course} />
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+
+    <script>
+      (function () {
+        var root = document.getElementById("root");
+        var source = document.getElementById("dashboard-script").textContent;
+        try {
+          var compiled = Babel.transform(source, { presets: ["react"] }).code;
+          eval(compiled);
+        } catch (error) {
+          root.innerHTML =
+            '<div style="max-width:720px;margin:0 auto;background:#181b24;border:1px solid #282d3e;border-radius:24px;padding:24px;text-align:left;">'
+            + '<h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:28px;">Dashboard failed to load</h1>'
+            + '<pre style="margin:0;white-space:pre-wrap;color:#f5a85b;font-family:ui-monospace,monospace;">'
+            + String(error && error.stack ? error.stack : error)
+            + "</pre>"
+            + "</div>";
+        }
+      })();
+    </script>
+  </body>
+</html>
