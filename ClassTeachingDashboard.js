@@ -24,6 +24,39 @@ function formatAverage(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
+function buildNiceYAxis(maxValue, targetTickCount = 5) {
+  if (!Number.isFinite(maxValue) || maxValue <= 0) {
+    return { safeMax: 1, yTicks: [1, 0] };
+  }
+
+  const rawStep = maxValue / targetTickCount;
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+  const normalized = rawStep / magnitude;
+  let niceBase = 10;
+
+  if (normalized <= 1) {
+    niceBase = 1;
+  } else if (normalized <= 2) {
+    niceBase = 2;
+  } else if (normalized <= 5) {
+    niceBase = 5;
+  }
+
+  const step = niceBase * magnitude;
+  const safeMax = Math.ceil(maxValue / step) * step;
+  const yTicks = [];
+
+  for (let current = safeMax; current >= 0; current -= step) {
+    yTicks.push(Number(current.toFixed(10)));
+  }
+
+  if (yTicks[yTicks.length - 1] !== 0) {
+    yTicks.push(0);
+  }
+
+  return { safeMax, yTicks };
+}
+
 function buildCombinedData(selectedItems, dataSource, metadata) {
   const lineDefinitions = [];
 
@@ -176,11 +209,7 @@ function MultiEntityChart({ chartData, lineDefinitions }) {
     const innerWidth = CHART_WIDTH - CHART_PADDING.left - CHART_PADDING.right;
     const innerHeight = CHART_HEIGHT - CHART_PADDING.top - CHART_PADDING.bottom;
     const xStep = chartData.length > 1 ? innerWidth / (chartData.length - 1) : 0;
-    const safeMax = yMax > 0 ? yMax : 1;
-    const yTickCount = 5;
-    const yTicks = Array.from({ length: yTickCount }, (_, index) =>
-      Math.round((safeMax * (yTickCount - 1 - index)) / (yTickCount - 1))
-    );
+    const { safeMax, yTicks } = buildNiceYAxis(yMax, 5);
 
     return { innerHeight, safeMax, xStep, yTicks };
   }, [chartData, lineDefinitions]);
